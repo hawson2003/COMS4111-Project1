@@ -23,11 +23,26 @@ def index():
 
     return render_template('index.html', users=users, current_user=current_user)
 
-@app.route('/courses', methods=['GET'])
+@app.route('/courses', methods=['GET', 'POST'])
 def courses():
+    global user_id
     query = request.args.get('query', '')
     all_courses_result = connection.execute(text("SELECT * FROM courses"))
     all_courses = all_courses_result.fetchall()
+
+    taken_courses_result = connection.execute(text("SELECT cid FROM Take WHERE uid = :uid"), {"uid": user_id})
+    taken_courses = {course.cid for course in taken_courses_result.fetchall()}
+
+    if request.method == 'POST':
+        course_id = request.form.get('course_id')
+        action = request.form.get('action')
+
+        if action == 'add':
+            connection.execute(text("INSERT INTO Take (uid, cid) VALUES (:uid, :cid)"), {"uid": user_id, "cid": course_id})
+        elif action == 'remove':
+            connection.execute(text("DELETE FROM Take WHERE uid = :uid AND cid = :cid"), {"uid": user_id, "cid": course_id})
+
+        return redirect(url_for('courses'))
 
     if query:
         courses = [course for course in all_courses if 
@@ -38,7 +53,7 @@ def courses():
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
 
-    return render_template('courses.html', courses=courses, current_user=current_user)
+    return render_template('courses.html', courses=courses, current_user=current_user, taken_courses=taken_courses)
 
 @app.route('/jobs')
 def jobs():
