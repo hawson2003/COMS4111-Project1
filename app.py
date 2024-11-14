@@ -27,21 +27,20 @@ def index():
 @app.route('/courses', methods=['GET', 'POST'])
 def courses():
     global user_id
+    user_id = user_id if 'user_id' in globals() else 'pw2629'
     query = request.args.get('query', '')
     all_courses_result = connection.execute(text("SELECT * FROM courses"))
     all_courses = all_courses_result.fetchall()
     
-    taken_courses_result = connection.execute(text("SELECT cid FROM Take WHERE uid = :uid"), {"uid": user_id})
-    taken_courses = {course.cid for course in taken_courses_result.fetchall()}
-
     if request.method == 'POST':
         course_id = request.form.get('course_id')
+        sid = int(''.join(filter(str.isdigit, course_id)))
         action = request.form.get('action')
-
+            
         if action == 'add':
-            connection.execute(text("INSERT INTO Take (uid, cid) VALUES (:uid, :cid)"), {"uid": user_id, "cid": course_id})
+            connection.execute(text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"), {"uid": user_id, "sid": sid})
         elif action == 'remove':
-            connection.execute(text("DELETE FROM Take WHERE uid = :uid AND cid = :cid"), {"uid": user_id, "cid": course_id})
+            connection.execute(text("DELETE FROM Take WHERE uid = :uid AND sid = sid"), {"uid": user_id, "sid": sid})
 
         return redirect(url_for('courses'))
 
@@ -53,9 +52,12 @@ def courses():
         courses = all_courses
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
+    
+    taken_courses_result = connection.execute(text("SELECT sid FROM Take WHERE uid = :uid"), {"uid": user_id})
+    taken_courses = {course.sid for course in taken_courses_result.fetchall()}
 
     return render_template('courses.html', courses=courses, current_user=current_user, taken_courses=taken_courses)
-
+    
 @app.route('/jobs')
 def jobs():
     interested_jobs = connection.execute(text("""
