@@ -1,1 +1,1 @@
-A COMS4111W class project for Hawson Wang and Peiyu Wang.
+A COMS4111W class project made by Hawson Wang and Peiyu Wang.
