@@ -34,16 +34,17 @@
                 </div>
                 <div class="slots">
                     <h4>Slots</h4>
-                    <div class="slot-gallery d-flex overflow-auto">
-                        {% for slot in slots %}
-                        <div class="slot-box border rounded p-3 m-2">
-                            <p><strong>Time:</strong> {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}</p>
-                            <p><strong>Days:</strong> {{ slot.weekdays }}</p>
-                            <p><strong>School Year:</strong> {{ slot.year_sem }}</p>
-                            <p><strong>Instructor:</strong> {{ slot.instructor }}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
+                    
+<div class="course-actions mt-3">
+    <form method="POST" action="/courses">
+        <input type="hidden" name="course_id" value="{{ course.cid }}">
+        {% if course.cid in taken_courses %}
+            <button type="submit" name="action" value="remove" class="btn btn-danger">Drop Course</button>
+        {% else %}
+            <button type="submit" name="action" value="add" class="btn btn-success">Add Course</button>
+        {% endif %}
+    </form>
+</div>
                 </div>
             </div>
             <div class="col-md-6 right-section">
