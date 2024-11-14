@@ -156,6 +156,6 @@ WHERE Have_Slots.cid = :cid;
     return render_template('course_details.html', course=course, comments=comments, grade_distribution=grade_distribution, slots=slots)
 
 if __name__ == '__main__':
+    global user_id
     user_id = 'pw2629'
-
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
