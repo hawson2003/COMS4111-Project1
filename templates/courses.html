@@ -35,8 +35,20 @@
                     {% for course in courses %}
                         <li>
                             {{ course.cid }} - {{ course.name }} - {{ course.credit }} credits
-                            <!-- <button onclick="showDetails('{{ course.cid }}', '{{ course.name }}', '{{ course.credit }}')">Details</button> -->
                             <a href="{{ url_for('course_details') }}?cid={{ course.cid }}">Details</a>
+                            {% if course.cid in taken_courses %}
+                                <form action="/courses" method="post" style="display:inline;">
+                                    <input type="hidden" name="course_id" value="{{ course.cid }}">
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="withdraw-button">Withdraw</button>
+                                </form>
+                            {% else %}
+                                <form action="/courses" method="post" style="display:inline;">
+                                    <input type="hidden" name="course_id" value="{{ course.cid }}">
+                                    <input type="hidden" name="action" value="add">
+                                    <button type="submit" class="add-button">Add</button>
+                                </form>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
