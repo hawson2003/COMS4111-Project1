@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Information</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .grade-chart {
+            display: flex;
+            max-width: 400px;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="return-button" href="{{ url_for('courses') }}">Return</a>
+        <span class="navbar-text">{{ course.cid }}</span>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 left-section">
+                <h1>{{ course.name }}</h1>
+                <p>Credits: {{ course.credit }}</p>
+                <div class="grade-distribution">
+                    <h4>Grade Distribution</h4>
+                    <div class="grade-distribution-chart">
+                        <canvas id="gradeChart" class="grade-chart"></canvas>
+                    </div>
+                </div>
+                <div class="slots">
+                    <h4>Slots</h4>
+                    <div class="slot-gallery d-flex overflow-auto">
+                        {% for slot in slots %}
+                        <div class="slot-box border rounded p-3 m-2">
+                            <p><strong>Time:</strong> {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}</p>
+                            <p><strong>Days:</strong> {{ slot.weekdays }}</p>
+                            <p><strong>School Year:</strong> {{ slot.year_sem }}</p>
+                            <p><strong>Instructor:</strong> {{ slot.instructor }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 right-section">
+                <h3>Comments</h3>
+                <div class="comments">
+                    {% for comment in comments %}
+                    <div class="comment-box">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user-circle profile-pic"></i>
+                            <div class="ml-3">
+                                <h5>User ID: {{ comment.uid }}</h5>
+                                <small>{{ comment.time }}</small>
+                            </div>
+                        </div>
+                        <p>Rating: {{ comment.rating }}</p>
+                        <p>{{ comment.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('gradeChart').getContext('2d');
+            
+            var gradeDistribution = {{ grade_distribution | tojson }};
+            var labels = gradeDistribution.map(function(item) { return item.lv; });
+            var data = gradeDistribution.map(function(item) { return item.count; });
+    
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#4caf50',
+                            '#2196f3',
+                            '#ffeb3b',
+                            '#ff9800',
+                            '#f44336'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columbia Course Planner - Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile">
+            <img src="https://via.placeholder.com/100" alt="Profile Picture">
+            <h2>Hi, {{ current_user.name }}</h2>
+        </div>
+        <a href="/" class="nav-button"><i class="fas fa-home"></i> Home</a>
+        <a href="/courses" class="nav-button"><i class="fas fa-book"></i> Courses</a>
+        <a href="/jobs" class="nav-button"><i class="fa-solid fa-briefcase"></i> Jobs</a>
+        <a href="/profile" class="nav-button"><i class="fas fa-user"></i> Profile</a>
+    </div>
+    <div class="content">
+        <h1>User Profile</h1>
+        {% if user %}
+            <p><strong>Name:</strong> {{ user['name'] }}</p>
+            <p><strong>Entry Year:</strong> {{ user['entry_year'] }}</p>
+            <p><strong>Email:</strong> {{ user['email'] }}</p>
+        {% else %}
+            <p>Please log in.</p>
+        {% endif %}
+
+        <h2>Recommended Users</h2>
+        {% if matches %}
+            <ul>
+            {% for match in matches %}
+                <li>{{ match['name'] }} - {{ match['email'] }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No matches found.</p>
+        {% endif %}
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columbia Course Planner - Courses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile">
+            <img src="https://via.placeholder.com/100" alt="Profile Picture">
+            <h2>Hi, {{ current_user.name }}</h2>
+        </div>
+        <a href="/" class="nav-button"><i class="fas fa-home"></i> Home</a>
+        <a href="/courses" class="nav-button"><i class="fas fa-book"></i> Courses</a>
+        <a href="/jobs" class="nav-button"><i class="fa-solid fa-briefcase"></i> Jobs</a>
+        <a href="/profile" class="nav-button"><i class="fas fa-user"></i> Profile</a>
+    </div>
+    <div class="content">
+        <h1>Courses</h1>
+        <div class="alert-box">
+            <i class="fa-solid fa-exclamation"></i>
+            <p>This webpage is designed for COMS4111W Project 1 only. It contains fake information on courses.</p>
+        </div>
+        <div class="course-selection-platform">
+            <h2>Course Selection Platform</h2>
+            <div class="search-section">
+                <form method="GET" action="/courses" class="search-box">
+                    <input type="text" name="query" placeholder="Enter course code or name">
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+                <ul class="search-results">
+                    {% for course in courses %}
+                        <li>
+                            {{ course.cid }} - {{ course.name }} - {{ course.credit }} credits
+                            <!-- <button onclick="showDetails('{{ course.cid }}', '{{ course.name }}', '{{ course.credit }}')">Details</button> -->
+                            <a href="{{ url_for('course_details') }}?cid={{ course.cid }}">Details</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
