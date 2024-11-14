@@ -17,6 +17,7 @@ def index():
         user_id = request.form.get('user')
         return redirect(url_for('index'))
 
+    user_id = user_id if 'user_id' in globals() else 'pw2629'
     users = connection.execute(text("SELECT uid, name FROM Users;")).fetchall()
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
@@ -29,7 +30,7 @@ def courses():
     query = request.args.get('query', '')
     all_courses_result = connection.execute(text("SELECT * FROM courses"))
     all_courses = all_courses_result.fetchall()
-
+    
     taken_courses_result = connection.execute(text("SELECT cid FROM Take WHERE uid = :uid"), {"uid": user_id})
     taken_courses = {course.cid for course in taken_courses_result.fetchall()}
 
