@@ -43,17 +43,16 @@ def courses():
         ).scalar()
 
         if slot_exists != 0:
-            with connection.begin():
-                if action == 'add':
-                    connection.execute(
-                        text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
-                        {"uid": user_id, "sid": slot_id}
-                    )
-                elif action == 'remove':
-                    connection.execute(
-                        text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
-                        {"uid": user_id, "sid": slot_id}
-                    )
+            if action == 'add':
+                connection.execute(
+                    text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
+                    {"uid": user_id, "sid": slot_id}
+                )
+            elif action == 'remove':
+                connection.execute(
+                    text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
+                    {"uid": user_id, "sid": slot_id}
+                )
 
         return redirect(url_for('courses'))
 
