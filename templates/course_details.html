@@ -20,7 +20,6 @@
         <a class="return-button" href="{{ url_for('courses') }}">Return</a>
         <span class="navbar-text">{{ course.cid }}</span>
     </nav>
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 left-section">
@@ -34,17 +33,24 @@
                 </div>
                 <div class="slots">
                     <h4>Slots</h4>
-                    
-<div class="course-actions mt-3">
-    <form method="POST" action="/courses">
-        <input type="hidden" name="course_id" value="{{ course.cid }}">
-        {% if course.cid in taken_courses %}
-            <button type="submit" name="action" value="remove" class="btn btn-danger">Drop Course</button>
-        {% else %}
-            <button type="submit" name="action" value="add" class="btn btn-success">Add Course</button>
-        {% endif %}
-    </form>
-</div>
+                    <div class="slot-gallery d-flex overflow-auto">
+                        {% for slot in slots %}
+                        <div class="slot-box border rounded p-3 m-2">
+                            <p><strong>Time:</strong> {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}</p>
+                            <p><strong>Days:</strong> {{ slot.weekdays }}</p>
+                            <p><strong>School Year:</strong> {{ slot.year_sem }}</p>
+                            <p><strong>Instructor:</strong> {{ slot.instructor }}</p>
+                            <form method="POST" action="/courses">
+                                <input type="hidden" name="slot_id" value="{{ slot.sid }}">
+                                {% if slot.sid in taken_slots %}
+                                    <button type="submit" name="action" value="remove" class="btn btn-danger mt-2">Drop Slot</button>
+                                {% else %}
+                                    <button type="submit" name="action" value="add" class="btn btn-success mt-2">Add Slot</button>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 right-section">
@@ -67,11 +73,9 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
