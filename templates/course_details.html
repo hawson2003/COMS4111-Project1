@@ -42,6 +42,7 @@
                             <p><strong>Instructor:</strong> {{ slot.instructor }}</p>
                             <form method="POST" action="/courses">
                                 <input type="hidden" name="slot_id" value="{{ slot.sid }}">
+                                <input type="hidden" name="course_id" value="{{ slot.cid }}">
                                 {% if slot.sid in taken_slots %}
                                     <button type="submit" name="action" value="remove" class="btn btn-danger mt-2">Drop Slot</button>
                                 {% else %}
