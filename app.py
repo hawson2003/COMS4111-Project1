@@ -126,7 +126,16 @@ def profile():
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
 
-    return render_template('profile.html', user=user, matches=matches, current_user=current_user)
+    taken_courses_result = connection.execute(text("""
+        SELECT have_slots.cid, have_slots.start_time, have_slots.end_time, have_slots.weekdays, have_slots.instructor
+        FROM Take
+        JOIN have_slots ON Take.sid = have_slots.sid
+        WHERE Take.uid = :uid
+    """), {"uid": user_id})
+
+    taken_slots = taken_courses_result.fetchall()
+
+    return render_template('profile.html', user=user, matches=matches, current_user=current_user, taken_slots=taken_slots)
 
 @app.route('/course_details', methods=['GET'])
 def course_details():
