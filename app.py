@@ -31,33 +31,46 @@ def courses():
     query = request.args.get('query', '')
     all_courses_result = connection.execute(text("SELECT * FROM courses"))
     all_courses = all_courses_result.fetchall()
-    
+
     if request.method == 'POST':
         course_id = request.form.get('course_id')
-        sid = int(''.join(filter(str.isdigit, course_id)))
         action = request.form.get('action')
-            
-        if action == 'add':
-            connection.execute(text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"), {"uid": user_id, "sid": sid})
-        elif action == 'remove':
-            connection.execute(text("DELETE FROM Take WHERE uid = :uid AND sid = sid"), {"uid": user_id, "sid": sid})
+        slot_id = request.form.get('slot_id')
+
+        slot_exists = connection.execute(
+            text("SELECT COUNT(*) FROM have_slots WHERE cid = :cid AND sid = :sid"),
+            {"cid": course_id, "sid": slot_id}
+        ).scalar()
+
+        if slot_exists == 0:
+            flash("Error: The selected slot does not exist for the specified course.", "danger")
+        else:
+            if action == 'add':
+                connection.execute(
+                    text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
+                    {"uid": user_id, "sid": slot_id}
+                )
+            elif action == 'remove':
+                connection.execute(
+                    text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
+                    {"uid": user_id, "sid": slot_id}
+                )
 
         return redirect(url_for('courses'))
 
     if query:
-        courses = [course for course in all_courses if 
-                   fuzz.partial_ratio(query.lower(), course.name.lower()) > 70 or 
+        courses = [course for course in all_courses if
+                   fuzz.partial_ratio(query.lower(), course.name.lower()) > 70 or
                    fuzz.partial_ratio(query.lower(), course.cid.lower()) > 70]
     else:
         courses = all_courses
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
-    
     taken_courses_result = connection.execute(text("SELECT sid FROM Take WHERE uid = :uid"), {"uid": user_id})
     taken_courses = {course.sid for course in taken_courses_result.fetchall()}
 
     return render_template('courses.html', courses=courses, current_user=current_user, taken_courses=taken_courses)
-    
+
 @app.route('/jobs')
 def jobs():
     interested_jobs = connection.execute(text("""
