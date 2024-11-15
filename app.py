@@ -43,31 +43,32 @@ def courses():
         ).scalar()
 
         if slot_exists != 0:
-            if action == 'add':
-                connection.execute(
-                    text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
-                    {"uid": user_id, "sid": slot_id}
-                )
-            elif action == 'remove':
-                connection.execute(
-                    text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
-                    {"uid": user_id, "sid": slot_id}
-                )
+            with connection.begin():
+                if action == 'add':
+                    connection.execute(
+                        text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
+                        {"uid": user_id, "sid": slot_id}
+                    )
+                elif action == 'remove':
+                    connection.execute(
+                        text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
+                        {"uid": user_id, "sid": slot_id}
+                    )
 
         return redirect(url_for('courses'))
 
     if query:
-        courses = [course for course in all_courses if
-                   fuzz.partial_ratio(query.lower(), course.name.lower()) > 70 or
+        courses = [course for course in all_courses if 
+                   fuzz.partial_ratio(query.lower(), course.name.lower()) > 70 or 
                    fuzz.partial_ratio(query.lower(), course.cid.lower()) > 70]
     else:
         courses = all_courses
 
     current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
     taken_courses_result = connection.execute(text("SELECT sid FROM Take WHERE uid = :uid"), {"uid": user_id})
-    taken_courses = {course.sid for course in taken_courses_result.fetchall()}
+    taken_slots = {course.sid for course in taken_courses_result.fetchall()}
 
-    return render_template('courses.html', courses=courses, current_user=current_user, taken_courses=taken_courses)
+    return render_template('courses.html', courses=courses, current_user=current_user, taken_slots=taken_slots)
 
 @app.route('/jobs')
 def jobs():
