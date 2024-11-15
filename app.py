@@ -18,9 +18,9 @@ def index():
         return redirect(url_for('index'))
 
     user_id = user_id if 'user_id' in globals() else 'pw2629'
-    users = connection.execute(text("SELECT uid, name FROM Users;")).fetchall()
+    users = connection.execute(text("SELECT uid, name FROM users;")).fetchall()
 
-    current_user = connection.execute(text("SELECT name FROM Users WHERE uid = :uid"), {"uid": user_id}).fetchone()
+    current_user = connection.execute(text("SELECT name FROM users WHERE uid = :uid"), {"uid": user_id}).fetchone()
 
     return render_template('index.html', users=users, current_user=current_user)
 
@@ -45,12 +45,12 @@ def courses():
         if slot_exists != 0:
             if action == 'add':
                 connection.execute(
-                    text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
+                    text("INSERT INTO take (uid, sid) VALUES (:uid, :sid)"),
                     {"uid": user_id, "sid": slot_id}
                 )
             elif action == 'remove':
                 connection.execute(
-                    text("DELETE FROM Take WHERE uid = :uid AND sid = :sid"),
+                    text("DELETE FROM take WHERE uid = :uid AND sid = :sid"),
                     {"uid": user_id, "sid": slot_id}
                 )
 
