@@ -39,6 +39,22 @@
             <p>No matches found.</p>
         {% endif %}
 
+        <h2>My Courses</h2>
+        {% if taken_slots %}
+            <ul>
+            {% for slot in taken_slots %}
+                <li>
+                    <strong>Course ID:</strong> {{ slot.cid }}<br>
+                    <strong>Time:</strong> {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}<br>
+                    <strong>Days:</strong> {{ slot.weekdays }}<br>
+                    <strong>Instructor:</strong> {{ slot.instructor }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No courses added yet.</p>
+        {% endif %}
+
     </div>
 </body>
 </html>
