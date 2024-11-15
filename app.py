@@ -42,9 +42,7 @@ def courses():
             {"cid": course_id, "sid": slot_id}
         ).scalar()
 
-        if slot_exists == 0:
-            flash("Error: The selected slot does not exist for the specified course.", "danger")
-        else:
+        if slot_exists != 0:
             if action == 'add':
                 connection.execute(
                     text("INSERT INTO Take (uid, sid) VALUES (:uid, :sid)"),
